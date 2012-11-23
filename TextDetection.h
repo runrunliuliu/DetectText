@@ -21,37 +21,39 @@
 
 #include <opencv/cv.h>
 
+#define DEBUG 1
+
 struct Point2d {
-    int x;
-    int y;
-    float SWT;
+       int x;
+       int y;
+       float SWT;
 };
 
 struct Point2dFloat {
-    float x;
-    float y;
+       float x;
+       float y;
 };
 
 struct Ray {
-        Point2d p;
-        Point2d q;
-        std::vector<Point2d> points;
+       Point2d p;
+       Point2d q;
+       std::vector<Point2d> points;
 };
 
 struct Point3dFloat {
-    float x;
-    float y;
-    float z;
+       float x;
+       float y;
+       float z;
 };
 
 
 struct Chain {
-    int p;
-    int q;
-    float dist;
-    bool merged;
-    Point2dFloat direction;
-    std::vector<int> components;
+       int p;
+       int q;
+       float dist;
+       bool merged;
+       Point2dFloat direction;
+       std::vector<int> components;
 };
 
 bool Point2dSort (Point2d const & lhs,
@@ -68,7 +70,7 @@ void strokeWidthTransform (IplImage * edgeImage,
                            std::vector<Ray> & rays);
 
 void SWTMedianFilter (IplImage * SWTImage,
-                     std::vector<Ray> & rays);
+                      std::vector<Ray> & rays);
 
 std::vector< std::vector<Point2d> >
 findLegallyConnectedComponents (IplImage * SWTImage,
@@ -76,12 +78,12 @@ findLegallyConnectedComponents (IplImage * SWTImage,
 
 std::vector< std::vector<Point2d> >
 findLegallyConnectedComponentsRAY (IplImage * SWTImage,
-                                std::vector<Ray> & rays);
+                                   std::vector<Ray> & rays);
 
 void componentStats(IplImage * SWTImage,
-                                        const std::vector<Point2d> & component,
-                                        float & mean, float & variance, float & median,
-                                        int & minx, int & miny, int & maxx, int & maxy);
+                    const std::vector<Point2d> & component,
+                    float & mean, float & variance, float & median,
+                    int & minx, int & miny, int & maxx, int & maxy);
 
 void filterComponents(IplImage * SWTImage,
                       std::vector<std::vector<Point2d> > & components,
@@ -92,11 +94,17 @@ void filterComponents(IplImage * SWTImage,
                       std::vector<std::pair<Point2d,Point2d> > & compBB );
 
 std::vector<Chain> makeChains( IplImage * colorImage,
-                 std::vector<std::vector<Point2d> > & components,
-                 std::vector<Point2dFloat> & compCenters,
-                 std::vector<float> & compMedians,
-                 std::vector<Point2d> & compDimensions,
-                 std::vector<std::pair<Point2d,Point2d> > & compBB);
+                               std::vector<std::vector<Point2d> > & components,
+                               std::vector<Point2dFloat> & compCenters,
+                               std::vector<float> & compMedians,
+                               std::vector<Point2d> & compDimensions,
+                               std::vector<std::pair<Point2d,Point2d> > & compBB);
+
+
+void getPositionChains (IplImage * colorImage,
+                   std::vector<std::vector<Point2d> > & components,
+                   std::vector<Chain> & chains,
+                   IplImage * output) ;
 
 #endif // TEXTDETECTION_H
 
