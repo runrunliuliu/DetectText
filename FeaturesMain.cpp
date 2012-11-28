@@ -72,14 +72,16 @@ int mainTextDetection ( int argc, char * * argv ) {
        }
 
        // Detect text in the image
-       textDetection ( byteQueryImage, atoi(argv[3]) );
-       //cvReleaseImage ( &byteQueryImage );
+       double score = textDetection ( byteQueryImage, atoi(argv[2]) );
+       cvReleaseImage ( &byteQueryImage );
+
+       std::cout<<score<<std::endl;
        
        return 0;
 }
 
 int main ( int argc, char * * argv ) {
-       if ( ( argc != 4 ) ) {
+       if ( ( argc != 3 ) ) {
               printf ( "usage: %s imagefile resultImage darkText\n",
                        argv[0] );
 
@@ -87,3 +89,6 @@ int main ( int argc, char * * argv ) {
        }
        return mainTextDetection ( argc, argv );
 }
+
+
+

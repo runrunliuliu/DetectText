@@ -20,8 +20,16 @@
 #define TEXTDETECTION_H
 
 #include <opencv/cv.h>
+#include <iostream>
 
-#define DEBUG 1
+#define DEBUG 0
+
+
+extern struct myComp{
+	bool operator() (std::pair<double, int> x, std::pair<double, int> y) {
+       		return x.first> y.first;
+	}
+}myBigger;
 
 struct Point2d {
        int x;
@@ -59,7 +67,7 @@ struct Chain {
 bool Point2dSort (Point2d const & lhs,
                   Point2d const & rhs);
 
-IplImage * textDetection (IplImage *    float_input,
+double textDetection (IplImage *    float_input,
                           bool dark_on_light);
 
 void strokeWidthTransform (IplImage * edgeImage,
@@ -105,6 +113,17 @@ void getPositionChains (IplImage * colorImage,
                    std::vector<std::vector<Point2d> > & components,
                    std::vector<Chain> & chains,
                    IplImage * output) ;
+
+double renderChainsWithBoxes (IplImage * SWTImage,
+                            std::vector<std::vector<Point2d> > & components,
+                            std::vector<Chain> & chains,
+                            std::vector<std::pair<Point2d,Point2d> > & compBB,
+                            IplImage * output) ;
+
+std::vector<std::pair<CvPoint,CvPoint> > mergeBoundingBox(
+	std::vector<std::pair<CvPoint,CvPoint> >& boxes);
+
+double getBoxScore(int width,int height, CvPoint lefttop,CvPoint rightdown);
 
 #endif // TEXTDETECTION_H
 
