@@ -208,15 +208,15 @@ void renderComponentsWithBoxes (IplImage * SWTImage, std::vector<std::vector<Poi
 }
 
 double renderChainsWithBoxes (IplImage * SWTImage,
-                            std::vector<std::vector<Point2d> > & components,
-                            std::vector<Chain> & chains,
-                            std::vector<std::pair<Point2d,Point2d> > & compBB,
-                            IplImage * output) {
+                              std::vector<std::vector<Point2d> > & components,
+                              std::vector<Chain> & chains,
+                              std::vector<std::pair<Point2d,Point2d> > & compBB,
+                              IplImage * output) {
 
-       if(chains.size()==0){
-		return 0.0;
+       if(chains.size()==0) {
+              return 0.0;
        }
-       
+
        // keep track of included components
        std::vector<bool> included;
        included.reserve(components.size());
@@ -242,13 +242,18 @@ double renderChainsWithBoxes (IplImage * SWTImage,
 
        int count = 0;
 
+       int record = 0;
+       double mess_weight=0.2;
+       int mess_num=5;
        double max=0.0;
        for (std::vector<std::pair<CvPoint,CvPoint> >::iterator it= bb.begin(); it != bb.end(); it++) {
 
               double score =getBoxScore(output->width,output->height,it->first,it->second);
 
-		if(score>max) max = score;
-		
+              if(score>max) max = score;
+
+              if(score>0.1) record++;
+
 #if DEBUG
               CvScalar c;
               if (count % 3 == 0) c=cvScalar(255,0,0);
@@ -256,14 +261,24 @@ double renderChainsWithBoxes (IplImage * SWTImage,
               else c=cvScalar(0,0,255);
               count++;
               cvRectangle(output,it->first,it->second,c,2);
-              
+
               std::cout<<"x1: "<<it->first.x<<"  y1: "<<it->first.y;
-              std::cout<<"x2: "<<it->second.x<<"  y2: "<<it->second.y<<std::endl;
+              std::cout<<"  x2: "<<it->second.x<<"  y2: "<<it->second.y<<std::endl;
               std::cout<<score<<std::endl;
 #endif
 
-
        }
+
+#if DEBUG
+	std::cout<<"record num: "<<record<<std::endl;
+#endif
+       int param=0;
+       if(record>=2*mess_num) param = 2;
+       if(mess_num<=record && record<2*mess_num) param =1;
+
+       max = max+ mess_weight*param;
+
+       if(max>1.0) max = 1.0;
 
        return max;
 }
@@ -380,7 +395,7 @@ double textDetection (IplImage * input, bool dark_on_light) {
        IplImage * edgeImage =
               cvCreateImage( cvGetSize (input),IPL_DEPTH_8U, 1 );
        cvCanny(grayImage, edgeImage, threshold_low, threshold_high, 3) ;
-       
+
 #if DEBUG
        cvSaveImage ( "canny.png", edgeImage);
 #endif
@@ -674,7 +689,7 @@ findLegallyConnectedComponents (IplImage * SWTImage,
 
        std::vector<std::vector<Point2d> > components;
        components.reserve(num_comp);
-       
+
 #if DEBUG
 
        std::cout << "Before filtering, " << num_comp << " components and " << num_vertices << " vertices" << std::endl;
@@ -1166,7 +1181,7 @@ std::vector<Chain> makeChains( IplImage * colorImage,
               }
        }
        chains = newchains;
-       
+
 #if DEBUG
 
        std::cout << chains.size() << " chains after merging" << std::endl;
